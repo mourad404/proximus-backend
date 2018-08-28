@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<form th:action="@{/login}" method="POST" >
+			<div >
+			<div>
+				<label>Username</label> 
+				<span><input type="text" name="username" /></span>
+			</div>
+			<br/>
+				<div>
+					<label>Password</label> 
+					<span><input type="password" name="password" /></span>
+				</div>
+
+				<div>
+					<input type="submit" value="Login" />
+				</div>
+			</div>
+</form>
+<form action="/signin/google" method="POST">
+	            <input type="hidden" name="scope" value="openid email" />
+	            <input type="submit" value="Login using GOOGLE"/>
+</form>
+<form action="/signin/facebook" method="POST">
+	            <input type="hidden" name="scope" value="public_profile,email" />
+	            <input type="submit" value="Login using FACEBOOK"/>
+</form>
+</body>
+</html>

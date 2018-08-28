@@ -14,13 +14,18 @@ import org.springframework.data.domain.Sort.Order;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.ntlx.proximus.backend.exception.ResourceNotFoundException;
+import net.ntlx.proximus.backend.metier.abst.CompteUtilisateurMetier;
 import net.ntlx.proximus.backend.metier.abst.UtilisateurMetier;
+import net.ntlx.proximus.backend.model.CompteUtilisateur;
 import net.ntlx.proximus.backend.model.Entreprise;
 import net.ntlx.proximus.backend.model.Utilisateur;
+import net.ntlx.proximus.backend.model.UtilisateurForm;
+import net.ntlx.proximus.backend.repository.CompteUtilisateurRepository;
 import net.ntlx.proximus.backend.repository.EntrepriseRepository;
 import net.ntlx.proximus.backend.repository.NoteRepository;
 import net.ntlx.proximus.backend.repository.UtilisateurRepository;
@@ -36,6 +41,15 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 
 	@Autowired
 	private NoteRepository noteRepository;
+
+	@Autowired
+	private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+	@Autowired
+	private CompteUtilisateurRepository compteUtilisateurRepository;
+
+	@Autowired
+	private CompteUtilisateurMetier compteUtilisateurMetier;
 
 	@Override
 	public ResponseEntity<Page<Utilisateur>> listUtilisateurs(Specification<Utilisateur> utiliSpec, List<String> dirAsc,
@@ -65,11 +79,30 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 	}
 
 	@Override
-	public ResponseEntity<Utilisateur> ajouterUtilisateur(Utilisateur u) {
+	@Transactional
+	public ResponseEntity<Utilisateur> ajouterUtilisateur(UtilisateurForm uf) {
+		if (compteUtilisateurRepository.existsByUsername(uf.getEmail()))
+			throw new RuntimeException("Cet email est déjà utilisé !!");
+		if (uf.getPassword() != uf.getRepassword())
+			throw new RuntimeException("Veuillez confirmer votre mot de passe !! ");
+		final Utilisateur u = new Utilisateur();
+		u.setNom(uf.getNom());
+		u.setPrenom(uf.getPrenom());
+		u.setEmail(uf.getEmail());
+		u.setCodePostal(uf.getCodePostal());
+		u.setDateNaissance(uf.getDateNaissance());
 		final Utilisateur newUtilisateur = utilisateurRepository.save(u);
 		if (newUtilisateur == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		} else {
+			final String passEncoded = bCryptPasswordEncoder.encode(uf.getPassword());
+			final CompteUtilisateur cu = new CompteUtilisateur();
+			cu.setUsername(uf.getEmail());
+			cu.setPassword(passEncoded);
+			cu.setEnabled(true);
+			cu.setUtilisateur(newUtilisateur);
+			compteUtilisateurRepository.save(cu);
+			compteUtilisateurMetier.roleToUser(uf.getEmail(), "ROLE_USER");
 			return ResponseEntity.status(HttpStatus.CREATED).body(newUtilisateur);
 		}
 	}

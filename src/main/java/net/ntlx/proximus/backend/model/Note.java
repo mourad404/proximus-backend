@@ -14,6 +14,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.hibernate.validator.constraints.Range;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,7 @@ import lombok.Setter;
 public class Note implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 8117881477045149189L;
 
@@ -38,7 +40,7 @@ public class Note implements Serializable {
 	private Long id;
 
 	// @NotBlank(message = "La valeur doit etre rempli !!")
-	// @Range(min=0, max=5, message = "La valeur doit etre entre 0 et 5 !!")
+	@Range(min = 0, max = 5, message = "La valeur doit etre entre 0 et 5 !!")
 	@Column(name = "\"VALEUR\"")
 	private Integer valeur;
 

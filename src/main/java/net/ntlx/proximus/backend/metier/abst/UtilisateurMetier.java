@@ -8,13 +8,14 @@ import org.springframework.http.ResponseEntity;
 
 import net.ntlx.proximus.backend.model.Entreprise;
 import net.ntlx.proximus.backend.model.Utilisateur;
+import net.ntlx.proximus.backend.model.UtilisateurForm;
 
 public interface UtilisateurMetier {
 
 	public ResponseEntity<Page<Utilisateur>> listUtilisateurs(Specification<Utilisateur> utiliSpec, List<String> dirAsc,
 			List<String> dirDesc, Integer page, Integer size);
 
-	public ResponseEntity<Utilisateur> ajouterUtilisateur(Utilisateur u);
+	public ResponseEntity<Utilisateur> ajouterUtilisateur(UtilisateurForm uf);
 
 	public Utilisateur rechercherUtilisateur(Long id);
 

@@ -16,7 +16,9 @@ public interface AvisMetier {
 
 	public List<Avis> listAvisParEntreprise(Long id);
 
-	public ResponseEntity<String> supprimerAvis(Long id);
+	public ResponseEntity<String> supprimerAvis(Long idu, Long ida);
+
+	public ResponseEntity<String> supprimerAvisAdmin(Long ida);
 
 	public ResponseEntity<Avis> modifierAvis(Long ida, Avis newAvis);
 }

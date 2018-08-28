@@ -42,11 +42,7 @@ public class Entreprise implements Serializable {
 	/**
 	 *
 	 */
-	private static final long serialVersionUID = -2194971740488937662L;
-
-	/**
-	 *
-	 */
+	private static final long serialVersionUID = -8524667375720041876L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -90,10 +86,10 @@ public class Entreprise implements Serializable {
 	@JoinColumn(name = "\"ID_CATEGORIE\"")
 	private Categorie categorie;
 
-	@Column(name = "\"NOTATION\"", columnDefinition = "Decimal(2,1) default'0'")
+	@Column(name = "\"NOTATION\"", columnDefinition = "Decimal(2,1) default 0")
 	private Double notation = (double) 0;
 
-	@Column(name = "\"NB_AVIS\"", columnDefinition = "default '0'")
+	@Column(name = "\"NB_AVIS\"", columnDefinition = "INT default 0")
 	private Integer nombreAvis = 0;
 
 	@Column(name = "\"DESCRIPTION\"", columnDefinition = "text")

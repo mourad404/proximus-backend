@@ -82,11 +82,29 @@ public class AvisMetierImpl implements AvisMetier {
 
 	@Override
 	@Transactional
-	public ResponseEntity<String> supprimerAvis(Long id) {
-		final Entreprise entreprise = avisRepository.findById(id).get().getEntreprise();
-		avisRepository.deleteById(id);
-		if (avisRepository.existsById(id)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'avis (" + id + ") n'est pas supprimée");
+	public ResponseEntity<String> supprimerAvis(Long idu, Long ida) {
+		final Avis avis = avisRepository.findById(ida).get();
+		if (avis.getUtilisateur().getId() != idu)
+			throw new UnAuthorizedException("Vous ne pouvez supprimer que votre avis !!");
+		final Entreprise entreprise = avisRepository.findById(ida).get().getEntreprise();
+		avisRepository.deleteById(ida);
+		if (avisRepository.existsById(ida)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'avis (" + ida + ") n'est pas supprimée");
+		} else {
+			Integer nbAvis = entreprise.getNombreAvis();
+			entreprise.setNombreAvis(nbAvis--);
+			entreprise.setNotation(noteRepository.notationOfEse(entreprise.getId()));
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+	}
+
+	@Override
+	@Transactional
+	public ResponseEntity<String> supprimerAvisAdmin(Long ida) {
+		final Entreprise entreprise = avisRepository.findById(ida).get().getEntreprise();
+		avisRepository.deleteById(ida);
+		if (avisRepository.existsById(ida)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'avis (" + ida + ") n'est pas supprimée");
 		} else {
 			Integer nbAvis = entreprise.getNombreAvis();
 			entreprise.setNombreAvis(nbAvis--);
@@ -103,7 +121,7 @@ public class AvisMetierImpl implements AvisMetier {
 		if (oldAvis.getUtilisateur().getId() != newAvis.getUtilisateur().getId())
 			throw new UnAuthorizedException("Vous ne pouvez modifier que votre avis !!");
 
-		Entreprise entreprise = oldAvis.getEntreprise();
+		final Entreprise entreprise = oldAvis.getEntreprise();
 		newAvis.setId(ida);
 		newAvis.setEntreprise(entreprise);
 		newAvis.setDateAjout(new Date());

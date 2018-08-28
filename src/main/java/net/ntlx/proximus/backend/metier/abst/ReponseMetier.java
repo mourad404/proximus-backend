@@ -14,7 +14,9 @@ public interface ReponseMetier {
 
 	public List<Reponse> listReponsesParQuestion(Long id);
 
-	public ResponseEntity<String> supprimerReponse(Long id);
+	public ResponseEntity<String> supprimerReponse(Long idu, Long idr);
+
+	public ResponseEntity<String> supprimerReponseAdmin(Long idr);
 
 	public ResponseEntity<Reponse> modifierReponse(Long idr, Reponse newReponse);
 }

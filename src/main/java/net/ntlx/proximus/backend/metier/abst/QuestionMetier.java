@@ -14,7 +14,9 @@ public interface QuestionMetier {
 
 	public List<Question> listQuestionsByEse(Long id);
 
-	public ResponseEntity<String> supprimerQuestion(Long id);
+	public ResponseEntity<String> supprimerQuestion(Long idu, Long idq);
+
+	public ResponseEntity<String> supprimerQuestionAdmin(Long idq);
 
 	public ResponseEntity<Question> modifierQuestion(Long idq, Question newQuestion);
 

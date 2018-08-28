@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,30 +21,34 @@ public class ImageEseController {
 
 	@Autowired
 	private ImageEseMetier imageMetier;
-	
-	@GetMapping("/entreprises/{ide}/images")
-	public List<ImageEse> listImagesParEntreprise(@PathVariable("ide") Long id){
+
+	@GetMapping("/public/entreprises/{ide}/images")
+	public List<ImageEse> listImagesParEntreprise(@PathVariable("ide") Long id) {
 		return imageMetier.listImagesParEntreprise(id);
 	}
-	
+
+	@Secured(value = { "ROLE_BO" })
 	@PostMapping("/entreprises/{ide}/images")
 	public ResponseEntity<ImageEse> ajouterImage(@PathVariable("ide") Long ide, @RequestBody ImageEse i) {
-		return imageMetier.ajouterImage(ide,i);
+		return imageMetier.ajouterImage(ide, i);
 	}
-	
-	@GetMapping("/images/{idi}")
+
+	@GetMapping("/public/images/{idi}")
 	public ImageEse rechercherImage(@PathVariable("idi") Long id) {
 		return imageMetier.rechercherImage(id);
 	}
-	
+
+	@Secured(value = { "ROLE_BO" })
 	@DeleteMapping("/images/{idi}")
-	public ResponseEntity<String> supprimerImage(@PathVariable("idi") Long id){
+	public ResponseEntity<String> supprimerImage(@PathVariable("idi") Long id) {
 		return imageMetier.supprimerImage(id);
 	}
-	
+
+	@Secured(value = { "ROLE_BO" })
 	@PutMapping("/entreprises/{ide}/images/{idi}")
-	public ResponseEntity<ImageEse> remplacerImage(@PathVariable("ide") Long ide, @PathVariable("idi") Long idi, @RequestBody ImageEse i){
+	public ResponseEntity<ImageEse> remplacerImage(@PathVariable("ide") Long ide, @PathVariable("idi") Long idi,
+			@RequestBody ImageEse i) {
 		return imageMetier.remplacerImage(ide, idi, i);
 	}
-	
+
 }

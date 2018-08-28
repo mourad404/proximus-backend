@@ -63,10 +63,23 @@ public class QuestionMetierImpl implements QuestionMetier {
 	}
 
 	@Override
-	public ResponseEntity<String> supprimerQuestion(Long id) {
-		questionRepository.deleteById(id);
-		if (questionRepository.existsById(id)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question (" + id + ") n'est pas supprimée");
+	public ResponseEntity<String> supprimerQuestion(Long idu, Long idq) {
+		final Question question = questionRepository.findById(idq).get();
+		if (question.getUtilisateur().getId() != idu)
+			throw new UnAuthorizedException("Vous ne pouvez supprimer que vos quetions !!");
+		questionRepository.deleteById(idq);
+		if (questionRepository.existsById(idq)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question (" + idq + ") n'est pas supprimée");
+		} else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+	}
+
+	@Override
+	public ResponseEntity<String> supprimerQuestionAdmin(Long idq) {
+		questionRepository.deleteById(idq);
+		if (questionRepository.existsById(idq)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La question (" + idq + ") n'est pas supprimée");
 		} else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,7 +34,7 @@ public class EntrepriseController {
 	@Autowired
 	private EntrepriseMetier entrepriseMetier;
 
-	@GetMapping("/entreprises")
+	@GetMapping("/public/entreprises")
 	public ResponseEntity<Page<Entreprise>> listEntreprise(@Join(path = "categorie", alias = "c") @Conjunction({
 			@Or({ @Spec(path = "rs", spec = LikeIgnoreCase.class),
 					@Spec(path = "c.label", params = "cat", spec = LikeIgnoreCase.class) }),
@@ -52,22 +53,25 @@ public class EntrepriseController {
 		return entrepriseMetier.listEntreprises(entreSpec, dirAsc, dirDesc, page, size);
 	}
 
+	@Secured(value = { "ROLE_BO" })
 	@PostMapping("/bos/{idb}/entreprises")
 	public ResponseEntity<Entreprise> ajouterEntreprise(@PathVariable("idb") Long idb,
 			@Valid @RequestBody Entreprise e) {
 		return entrepriseMetier.ajouterEntreprise(idb, e);
 	}
 
-	@GetMapping("/entreprises/{ide}")
+	@GetMapping("/public/entreprises/{ide}")
 	public Entreprise rechercherEntreprise(@PathVariable("ide") Long id) {
 		return entrepriseMetier.rechercherEntreprise(id);
 	}
 
+	@Secured(value = { "ROLE_ADMIN" })
 	@DeleteMapping("/entreprises/{ide}")
 	public ResponseEntity<String> supprimerEntreprise(@PathVariable("ide") Long id) {
 		return entrepriseMetier.supprimerEntreprise(id);
 	}
 
+	@Secured(value = { "ROLE_BO" })
 	@PutMapping("/entreprises/{ide}")
 	public ResponseEntity<Entreprise> modifierEntreprise(@PathVariable("ide") Long id,
 			@Valid @RequestBody Entreprise e) {

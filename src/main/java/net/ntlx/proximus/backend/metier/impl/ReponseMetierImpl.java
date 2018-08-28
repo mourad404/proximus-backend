@@ -51,10 +51,23 @@ public class ReponseMetierImpl implements ReponseMetier {
 	}
 
 	@Override
-	public ResponseEntity<String> supprimerReponse(Long id) {
-		reponseRepository.deleteById(id);
-		if (reponseRepository.existsById(id)) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La réponse (" + id + ") n'est pas supprimée");
+	public ResponseEntity<String> supprimerReponse(Long idu, Long idr) {
+		final Reponse reponse = reponseRepository.findById(idr).get();
+		if (reponse.getUtilisateur().getId() != idu)
+			throw new UnAuthorizedException("Vous ne pouvez supprimer que vos reponses !!");
+		reponseRepository.deleteById(idr);
+		if (reponseRepository.existsById(idr)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La réponse (" + idr + ") n'est pas supprimée");
+		} else {
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+		}
+	}
+
+	@Override
+	public ResponseEntity<String> supprimerReponseAdmin(Long idr) {
+		reponseRepository.deleteById(idr);
+		if (reponseRepository.existsById(idr)) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("La réponse (" + idr + ") n'est pas supprimée");
 		} else {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
