@@ -34,37 +34,44 @@ public class SocialConnectionSignup implements ConnectionSignUp {
 	public String execute(Connection<?> connection) {
 		if (connection.createData().getProviderId() == "google") {
 			final UserProfile userProfile = connection.fetchUserProfile();
-			final Utilisateur u = new Utilisateur();
-			u.setNom(userProfile.getLastName());
-			u.setPrenom(userProfile.getFirstName());
-			u.setEmail(userProfile.getEmail());
-			final Utilisateur newU = uRepo.save(u);
-			final CompteUtilisateur cu = new CompteUtilisateur();
-			cu.setUsername(userProfile.getEmail());
-			cu.setPassword(bCryptPasswordEncoder.encode(randomAlphabetic(8)));
-			cu.setEnabled(true);
-			cu.setUtilisateur(newU);
-			cuRepo.save(cu);
-			if (!cuRepo.existsByUsername(userProfile.getEmail()))
-				throw new RuntimeException("une erreur est survenue lors de l'enregistrement de vos données !!");
+			final CompteUtilisateur cExists = cuRepo.findByUsername(userProfile.getEmail());
+			if (cExists == null) {
+				final Utilisateur u = new Utilisateur();
+				u.setNom(userProfile.getLastName());
+				u.setPrenom(userProfile.getFirstName());
+				u.setEmail(userProfile.getEmail());
+				final Utilisateur newU = uRepo.save(u);
+				final CompteUtilisateur cu = new CompteUtilisateur();
+				cu.setUsername(userProfile.getEmail());
+				cu.setPassword(bCryptPasswordEncoder.encode(randomAlphabetic(8)));
+				cu.setEnabled(true);
+				cu.setUtilisateur(newU);
+				cuRepo.save(cu);
+				if (!cuRepo.existsByUsername(userProfile.getEmail()))
+					throw new RuntimeException("une erreur est survenue lors de l'enregistrement de vos données !!");
+
+			}
 			return userProfile.getEmail();
 		} else {
 			final Facebook facebook = (Facebook) connection.getApi();
 			final String[] fields = { "id", "email", "first_name", "last_name" };
 			final User userProfile = facebook.fetchObject("me", User.class, fields);
-			final Utilisateur u = new Utilisateur();
-			u.setNom(userProfile.getLastName());
-			u.setPrenom(userProfile.getFirstName());
-			u.setEmail(userProfile.getEmail());
-			final Utilisateur newU = uRepo.save(u);
-			final CompteUtilisateur cu = new CompteUtilisateur();
-			cu.setUsername(userProfile.getEmail());
-			cu.setPassword(bCryptPasswordEncoder.encode(randomAlphabetic(8)));
-			cu.setEnabled(true);
-			cu.setUtilisateur(newU);
-			cuRepo.save(cu);
-			if (!cuRepo.existsByUsername(userProfile.getEmail()))
-				throw new RuntimeException("une erreur est survenue lors de l'enregistrement de vos données !!");
+			final CompteUtilisateur cExists = cuRepo.findByUsername(userProfile.getEmail());
+			if (cExists == null) {
+				final Utilisateur u = new Utilisateur();
+				u.setNom(userProfile.getLastName());
+				u.setPrenom(userProfile.getFirstName());
+				u.setEmail(userProfile.getEmail());
+				final Utilisateur newU = uRepo.save(u);
+				final CompteUtilisateur cu = new CompteUtilisateur();
+				cu.setUsername(userProfile.getEmail());
+				cu.setPassword(bCryptPasswordEncoder.encode(randomAlphabetic(8)));
+				cu.setEnabled(true);
+				cu.setUtilisateur(newU);
+				cuRepo.save(cu);
+				if (!cuRepo.existsByUsername(userProfile.getEmail()))
+					throw new RuntimeException("une erreur est survenue lors de l'enregistrement de vos données !!");
+			}
 			return userProfile.getEmail();
 		}
 	}

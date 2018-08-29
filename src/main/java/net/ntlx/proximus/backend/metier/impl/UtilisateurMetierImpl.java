@@ -19,12 +19,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import net.ntlx.proximus.backend.exception.ResourceNotFoundException;
-import net.ntlx.proximus.backend.metier.abst.CompteUtilisateurMetier;
 import net.ntlx.proximus.backend.metier.abst.UtilisateurMetier;
+import net.ntlx.proximus.backend.model.CompteRole;
 import net.ntlx.proximus.backend.model.CompteUtilisateur;
 import net.ntlx.proximus.backend.model.Entreprise;
 import net.ntlx.proximus.backend.model.Utilisateur;
 import net.ntlx.proximus.backend.model.UtilisateurForm;
+import net.ntlx.proximus.backend.repository.CompteRoleRepository;
 import net.ntlx.proximus.backend.repository.CompteUtilisateurRepository;
 import net.ntlx.proximus.backend.repository.EntrepriseRepository;
 import net.ntlx.proximus.backend.repository.NoteRepository;
@@ -49,13 +50,13 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 	private CompteUtilisateurRepository compteUtilisateurRepository;
 
 	@Autowired
-	private CompteUtilisateurMetier compteUtilisateurMetier;
+	private CompteRoleRepository compteRoleRepository;
 
 	@Override
 	public ResponseEntity<Page<Utilisateur>> listUtilisateurs(Specification<Utilisateur> utiliSpec, List<String> dirAsc,
 			List<String> dirDesc, Integer page, Integer size) {
 
-		List<Order> ords = new ArrayList<Order>();
+		final List<Order> ords = new ArrayList<Order>();
 		if (dirDesc != null) {
 			if (dirDesc.size() != 0) {
 				for (int i = 0; i < dirAsc.size(); i++)
@@ -74,16 +75,16 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 				for (int i = 0; i < dirAsc.size(); i++)
 					ords.add(new Order(Direction.ASC, dirAsc.get(i)));
 		}
-		Pageable p = PageRequest.of(page, size, Sort.by(ords));
+		final Pageable p = PageRequest.of(page, size, Sort.by(ords));
 		return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(utilisateurRepository.findAll(utiliSpec, p));
 	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<Utilisateur> ajouterUtilisateur(UtilisateurForm uf) {
-		if (compteUtilisateurRepository.existsByUsername(uf.getEmail()))
+		if (compteUtilisateurRepository.findByUsername(uf.getEmail()) != null)
 			throw new RuntimeException("Cet email est déjà utilisé !!");
-		if (uf.getPassword() != uf.getRepassword())
+		if (!uf.getPassword().equals(uf.getRepassword()))
 			throw new RuntimeException("Veuillez confirmer votre mot de passe !! ");
 		final Utilisateur u = new Utilisateur();
 		u.setNom(uf.getNom());
@@ -101,8 +102,11 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 			cu.setPassword(passEncoded);
 			cu.setEnabled(true);
 			cu.setUtilisateur(newUtilisateur);
+			final CompteRole r_user = compteRoleRepository.findByRolename("ROLE_USER");
+			final Collection<CompteRole> roles = new ArrayList<>();
+			roles.add(r_user);
+			cu.setRoles(roles);
 			compteUtilisateurRepository.save(cu);
-			compteUtilisateurMetier.roleToUser(uf.getEmail(), "ROLE_USER");
 			return ResponseEntity.status(HttpStatus.CREATED).body(newUtilisateur);
 		}
 	}
@@ -153,7 +157,7 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 
 		final Entreprise entreprise = entrepriseRepository.findById(ide).get();
 		final Utilisateur utilisateur = utilisateurRepository.findById(idu).get();
-		Collection<Entreprise> colFavoris = utilisateur.getFavoris();
+		final Collection<Entreprise> colFavoris = utilisateur.getFavoris();
 		if (colFavoris.contains(entreprise)) {
 			colFavoris.remove(entreprise);
 		} else {
@@ -168,7 +172,7 @@ public class UtilisateurMetierImpl implements UtilisateurMetier {
 		final Utilisateur utilisateur = utilisateurRepository.findById(id).get();
 		if (utilisateur == null)
 			throw new ResourceNotFoundException("Utilisateur (id: " + id + ") est introuvable !!");
-		List<Entreprise> listFavoris = (List<Entreprise>) utilisateur.getFavoris();
+		final List<Entreprise> listFavoris = (List<Entreprise>) utilisateur.getFavoris();
 		return listFavoris;
 	}
 

@@ -61,10 +61,9 @@ public class CompteUtilisateurMetierImpl implements CompteUtilisateurMetier {
 
 	@Override
 	public void roleToUser(String username, String rolename) {
-		CompteUtilisateur cu = compteUtilisateurRepository.findByUsername(username);
-		CompteRole cr = compteRoleRepository.findByRolename(rolename);
+		final CompteUtilisateur cu = compteUtilisateurRepository.findByUsername(username);
+		final CompteRole cr = compteRoleRepository.findByRolename(rolename);
 		cu.getRoles().add(cr);
-
 	}
 
 	@Override

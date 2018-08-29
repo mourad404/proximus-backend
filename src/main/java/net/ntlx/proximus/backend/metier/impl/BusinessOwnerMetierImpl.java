@@ -1,5 +1,7 @@
 package net.ntlx.proximus.backend.metier.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,11 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import net.ntlx.proximus.backend.exception.ResourceNotFoundException;
 import net.ntlx.proximus.backend.metier.abst.BusinessOwnerMetier;
-import net.ntlx.proximus.backend.metier.abst.CompteUtilisateurMetier;
 import net.ntlx.proximus.backend.model.BusinessOwner;
+import net.ntlx.proximus.backend.model.CompteRole;
 import net.ntlx.proximus.backend.model.CompteUtilisateur;
 import net.ntlx.proximus.backend.model.UtilisateurForm;
 import net.ntlx.proximus.backend.repository.BusinessOwnerRepository;
+import net.ntlx.proximus.backend.repository.CompteRoleRepository;
 import net.ntlx.proximus.backend.repository.CompteUtilisateurRepository;
 
 @Service
@@ -28,7 +31,7 @@ public class BusinessOwnerMetierImpl implements BusinessOwnerMetier {
 	private CompteUtilisateurRepository compteUtilisateurRepository;
 
 	@Autowired
-	private CompteUtilisateurMetier compteUtilisateurMetier;
+	private CompteRoleRepository compteRoleRepository;
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -62,9 +65,13 @@ public class BusinessOwnerMetierImpl implements BusinessOwnerMetier {
 			cu.setPassword(passEncoded);
 			cu.setEnabled(true);
 			cu.setUtilisateur(newBO);
+			final CompteRole r_user = compteRoleRepository.findByRolename("ROLE_USER");
+			final CompteRole r_bo = compteRoleRepository.findByRolename("ROLE_BO");
+			final Collection<CompteRole> roles = new ArrayList<>();
+			roles.add(r_user);
+			roles.add(r_bo);
+			cu.setRoles(roles);
 			compteUtilisateurRepository.save(cu);
-			compteUtilisateurMetier.roleToUser(uf.getEmail(), "ROLE_BO");
-			compteUtilisateurMetier.roleToUser(uf.getEmail(), "ROLE_USER");
 			return ResponseEntity.status(HttpStatus.CREATED).body(newBO);
 		}
 	}
