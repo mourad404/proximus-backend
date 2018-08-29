@@ -6,7 +6,6 @@ import java.util.Date;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.PastOrPresent;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,7 +19,7 @@ import lombok.Setter;
 public class UtilisateurForm implements Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 8172067593978411383L;
 
@@ -42,7 +41,6 @@ public class UtilisateurForm implements Serializable {
 	private Long codePostal;
 
 	@Temporal(TemporalType.DATE)
-	@PastOrPresent
 	private Date dateNaissance;
 
 	// @Size(min = 9, max = 10, message = "Le numero du telephone doit etre de 9 ou

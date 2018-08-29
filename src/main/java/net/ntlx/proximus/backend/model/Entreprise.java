@@ -20,7 +20,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.PastOrPresent;
 
 import org.hibernate.validator.constraints.URL;
 
@@ -95,7 +94,6 @@ public class Entreprise implements Serializable {
 	@Column(name = "\"DESCRIPTION\"", columnDefinition = "text")
 	private String description;
 
-	@PastOrPresent
 	@Temporal(value = TemporalType.DATE)
 	@Column(name = "\"DATE_CREATION\"")
 	private Date dateCreation;

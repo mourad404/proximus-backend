@@ -21,7 +21,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.PastOrPresent;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -29,7 +28,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
 
 @Entity
 @Table(name = "\"UTILISATEUR\"")
@@ -54,11 +52,11 @@ public class Utilisateur implements Serializable {
 	@Column(name = "\"ID\"")
 	private Long id;
 
-	// @NotBlank(message = "Le NOM doit etre rempli  !!")
+	// @NotBlank(message = "Le NOM doit etre rempli !!")
 	@Column(name = "\"NOM\"")
 	private String nom;
 
-	// @NotBlank(message = "Le PRENOM doit etre rempli  !!")
+	// @NotBlank(message = "Le PRENOM doit etre rempli !!")
 	@Column(name = "\"PRENOM\"")
 	private String prenom;
 
@@ -71,7 +69,6 @@ public class Utilisateur implements Serializable {
 	private Long codePostal;
 
 	@Temporal(TemporalType.DATE)
-	@PastOrPresent
 	@Column(name = "\"DATE_NAISSANCE\"")
 	private Date dateNaissance;
 
@@ -79,32 +76,35 @@ public class Utilisateur implements Serializable {
 	@JoinTable(name = "\"FAVORIS\"", joinColumns = { @JoinColumn(name = "\"ID_UTILISATEUR\"") }, inverseJoinColumns = {
 			@JoinColumn(name = "\"ID_ENTREPRISE\"") })
 	private Collection<Entreprise> favoris;
-	
-	@OneToMany(mappedBy = "utilisateur" , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+
+	@OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Collection<Avis> avis;
-	
-	@OneToMany(mappedBy = "utilisateur" , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+
+	@OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Collection<Question> questions;
-	
-	@OneToMany(mappedBy = "utilisateur" , fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+
+	@OneToMany(mappedBy = "utilisateur", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	private Collection<Reponse> reponses;
 
 	/**
 	 * Getters pour utiliser @JsonIgnore
 	 */
-	
+
 	@JsonIgnore
 	public Collection<Entreprise> getFavoris() {
 		return favoris;
 	}
+
 	@JsonIgnore
 	public Collection<Avis> getAvis() {
 		return avis;
 	}
+
 	@JsonIgnore
 	public Collection<Question> getQuestions() {
 		return questions;
 	}
+
 	@JsonIgnore
 	public Collection<Reponse> getReponses() {
 		return reponses;

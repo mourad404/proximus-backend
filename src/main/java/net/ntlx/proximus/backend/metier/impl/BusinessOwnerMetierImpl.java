@@ -44,9 +44,9 @@ public class BusinessOwnerMetierImpl implements BusinessOwnerMetier {
 	@Override
 	@Transactional
 	public ResponseEntity<BusinessOwner> ajouterBO(UtilisateurForm uf) {
-		if (compteUtilisateurRepository.existsByUsername(uf.getEmail()))
+		if (compteUtilisateurRepository.findByUsername(uf.getEmail()) != null)
 			throw new RuntimeException("Cet email est déjà utilisé !!");
-		if (uf.getPassword() != uf.getRepassword())
+		if (!uf.getPassword().equals(uf.getRepassword()))
 			throw new RuntimeException("Veuillez confirmer votre mot de passe !! ");
 		final BusinessOwner bo = new BusinessOwner();
 		bo.setNom(uf.getNom());

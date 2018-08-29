@@ -36,7 +36,7 @@ public class EntrepriseMetierImpl implements EntrepriseMetier {
 	public ResponseEntity<Page<Entreprise>> listEntreprises(Specification<Entreprise> entreSpec, List<String> dirAsc,
 			List<String> dirDesc, Integer page, Integer size) {
 
-		List<Order> ords = new ArrayList<Order>();
+		final List<Order> ords = new ArrayList<Order>();
 		if (dirDesc != null) {
 			if (dirDesc.size() != 0) {
 				for (int i = 0; i < dirAsc.size(); i++)
@@ -55,13 +55,15 @@ public class EntrepriseMetierImpl implements EntrepriseMetier {
 				for (int i = 0; i < dirAsc.size(); i++)
 					ords.add(new Order(Direction.ASC, dirAsc.get(i)));
 		}
-		Pageable p = PageRequest.of(page, size, Sort.by(ords));
+		final Pageable p = PageRequest.of(page, size, Sort.by(ords));
 		return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT).body(entrepriseRepository.findAll(entreSpec, p));
 	}
 
 	@Override
 	@Transactional
 	public ResponseEntity<Entreprise> ajouterEntreprise(Long idb, Entreprise e) {
+		e.setNotation((double) 0);
+		e.setNombreAvis(0);
 		final Entreprise newEntreprise = entrepriseRepository.save(e);
 		if (newEntreprise == null) {
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -82,6 +84,7 @@ public class EntrepriseMetierImpl implements EntrepriseMetier {
 
 	@Override
 	public ResponseEntity<String> supprimerEntreprise(Long id) {
+
 		entrepriseRepository.deleteById(id);
 		if (entrepriseRepository.existsById(id)) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'Entreprise (" + id + ") n'est pas supprimée");

@@ -92,7 +92,7 @@ public class AvisMetierImpl implements AvisMetier {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'avis (" + ida + ") n'est pas supprimée");
 		} else {
 			Integer nbAvis = entreprise.getNombreAvis();
-			entreprise.setNombreAvis(nbAvis--);
+			entreprise.setNombreAvis(--nbAvis);
 			entreprise.setNotation(noteRepository.notationOfEse(entreprise.getId()));
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}
@@ -107,7 +107,7 @@ public class AvisMetierImpl implements AvisMetier {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("L'avis (" + ida + ") n'est pas supprimée");
 		} else {
 			Integer nbAvis = entreprise.getNombreAvis();
-			entreprise.setNombreAvis(nbAvis--);
+			entreprise.setNombreAvis(--nbAvis);
 			entreprise.setNotation(noteRepository.notationOfEse(entreprise.getId()));
 			return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 		}

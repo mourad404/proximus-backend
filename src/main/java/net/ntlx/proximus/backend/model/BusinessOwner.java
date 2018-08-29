@@ -2,8 +2,10 @@ package net.ntlx.proximus.backend.model;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -39,7 +41,7 @@ public class BusinessOwner extends Utilisateur implements Serializable {
 	@Column(name = "\"TEL\"")
 	private String tel;
 
-	@OneToOne
+	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "ID_ENTREPRISE")
 	private Entreprise entreprise;
 
